@@ -10,6 +10,7 @@ class C2CListener extends CBaseListener
 {
 	Stack<StringBuilder> out = new Stack<StringBuilder>();
 	CParser parser;
+	int counter=0;
 	C2CListener(CParser parser){
 		out.push(new StringBuilder(""));
 		this.parser = parser;
@@ -28,8 +29,112 @@ class C2CListener extends CBaseListener
 	}
 	
 	@Override	public void visitTerminal(TerminalNode node) {
+		if(node.getText().equals("}") && node.getParent() instanceof CParser.CompoundStmtContext){
+			out.peek().append("\n");
+			if(counter != 0){
+				for(int i=0; i<counter; i++){
+					out.peek().append("\t");
+				}
+			}
+		}
+		
 		if(node.getParent().getParent().getParent() instanceof CParser.ProgramContext==false)
-			out.peek().append(node.getText()+'\n'); 			// Print TerminalNode 
+			out.peek().append(node.getText()); 			// Print TerminalNode
+		
+		if(node.getText().equals("char") || node.getText().equals("void") || node.getText().equals("float") || node.getText().equals("int") || node.getText().equals("return")){
+			out.peek().append(" ");
+		}		
+	}
+	
+	@Override public void enterDeclList(CParser.DeclListContext ctx) {
+		if(ctx.getParent() instanceof CParser.CompoundStmtContext){
+			out.peek().append("\n");
+			out.peek().append("\t");
+		}
+	}
+	
+	@Override public void enterDeclaration(CParser.DeclarationContext ctx) {
+		if(counter != 0){
+			for(int i=0; i<counter; i++){
+				out.peek().append("\t");
+			}
+		}
+	}
+	
+	@Override public void exitDeclaration(CParser.DeclarationContext ctx) { 
+		out.peek().append("\n");
+		out.peek().append("\t");
+	}
+	
+	@Override public void enterCompoundStmt(CParser.CompoundStmtContext ctx) {
+		if(ctx.getParent().getParent() instanceof CParser.WhileStmtContext){
+			
+		}else if(ctx.getParent() instanceof CParser.FunctionContext){
+			out.peek().append("\n");
+			if(counter != 0){
+				for(int i=0; i<counter; i++){
+					out.peek().append("\t");
+				}
+			}
+		}else{
+			out.peek().append("\n");
+			if(counter != 0){
+				for(int i=0; i<counter; i++){
+					out.peek().append("\t");
+				}
+			}
+		}
+	}
+	
+	@Override public void enterStmt(CParser.StmtContext ctx) {
+		if( ctx.getParent() instanceof CParser.ForStmtContext || ctx.getParent() instanceof CParser.IfStmtContext || ctx.getParent() instanceof CParser.WhileStmtContext){
+			
+		}else{
+			out.peek().append("\n");
+			if(counter != 0){
+				for(int i=0; i<counter; i++){
+					out.peek().append("\t");
+				}
+			}
+			out.peek().append("\t");
+		}
+	}
+	
+	@Override public void exitStmt(CParser.StmtContext ctx) { 
+		if(ctx.getChild(0) instanceof CParser.RetStmtContext){
+			out.peek().append("\n");
+		}
+	}
+	
+	@Override public void enterWhileStmt(CParser.WhileStmtContext ctx) { 
+		counter++;
+	}
+	
+	@Override public void exitWhileStmt(CParser.WhileStmtContext ctx) { 
+		counter--;
+	}
+	
+	@Override public void enterForStmt(CParser.ForStmtContext ctx) { 
+		out.peek().append("\n");
+		out.peek().append("\t");
+		if(counter != 0){
+			for(int i=0; i<counter; i++){
+				out.peek().append("\t");
+			}
+		}
+		counter++;
+	}
+
+	@Override public void exitForStmt(CParser.ForStmtContext ctx) { 
+		counter--;
+	}
+
+	@Override public void enterIfStmt(CParser.IfStmtContext ctx) { 
+		counter++;
+	}
+
+	@Override public void exitIfStmt(CParser.IfStmtContext ctx) {
+		counter--;
 	}
 }
 
