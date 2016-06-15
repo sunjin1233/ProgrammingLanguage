@@ -41,8 +41,13 @@ class C2CVisitor extends AutoCBaseVisitor<Integer>
 			out.push(new StringBuilder(s));
 		}
 		
-		if(node.getParent().getParent().getParent() instanceof AutoCParser.ProgramContext==false)
-			out.peek().append(node.getText()); 			// Print TerminalNode 
+		if(node.getParent().getParent().getParent() instanceof AutoCParser.ProgramContext==false){
+			if(node.getText().equals("auto")){
+				out.peek().append("int"); 
+			}else{
+				out.peek().append(node.getText()); 			// Print TerminalNode
+			}
+		}
 		
 		if(node.getText().equals("char") || node.getText().equals("void") || node.getText().equals("float") || node.getText().equals("int") || node.getText().equals("return") || node.getText().equals("auto") || node.getText().equals("case") ){
 			out.peek().append(" ");
