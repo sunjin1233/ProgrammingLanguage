@@ -37,7 +37,7 @@ class C2CVisitor extends AutoCBaseVisitor<Integer>
 	@Override public Integer visitTerminal(TerminalNode node) {
 		if(node.getText().equals("}")){
 			String s = out.pop().toString();
-			s = s.substring(1, s.length()-1);
+			s = s.substring(0, s.length()-1);
 			out.push(new StringBuilder(s));
 		}
 		
@@ -70,10 +70,11 @@ class C2CVisitor extends AutoCBaseVisitor<Integer>
 			for(int i = 0; i< parenthesiscounter; i++){
 				out.peek().append("\t");
 			}
+			
 			if(node.getParent().getParent().getParent() instanceof AutoCParser.WhileStmtContext){
 				for(int i=0; i<parenthesiscounter+1; i++){
 					String s = out.pop().toString();
-					s = s.substring(1, s.length()-1);
+					s = s.substring(0, s.length()-1);
 					out.push(new StringBuilder(s));
 				}	
 			}
